@@ -1,12 +1,12 @@
 === ACF Ninja Forms ===
 Contributors: bostondv
 Donate link: http://pomelodesign.com/donate
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl.html
+License: MIT
+License URI: http://opensource.org/licenses/MIT
 Tags: ninja forms, acf, advanced custom fields, forms
 Requires at least: 3.8
 Tested up to: 4.2
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 
 Adds an Advanced Custom Fields field to select one or many Ninja Forms.
 

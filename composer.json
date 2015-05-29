@@ -1,7 +1,7 @@
 {
   "name": "bostondv/acf-ninja-forms",
   "type": "wordpress-plugin",
-  "license": "GPLv3",
+  "license": "MIT",
   "description": "Adds an Advanced Custom Fields field to select one or many Ninja Forms.",
   "homepage": "https://github.com/bostondv/acf-ninja-forms",
   "authors": [
