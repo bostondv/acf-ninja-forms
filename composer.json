@@ -1,0 +1,29 @@
+{
+  "name": "bostondv/acf-ninja-forms",
+  "type": "wordpress-plugin",
+  "license": "GPLv3",
+  "description": "Adds an Advanced Custom Fields field to select one or many Ninja Forms.",
+  "homepage": "https://github.com/bostondv/acf-ninja-forms",
+  "authors": [
+    {
+      "name": "Boston Dell-Vandenberg",
+      "email": "boston@pomelodesign.com",
+      "homepage": "http://www.pomelodesign.com"
+    }
+  ],
+  "keywords": [
+    "wordpress",
+    "acf",
+    "advanced custom fields",
+    "ninja forms",
+    "css",
+    "forms"
+  ],
+  "support": {
+    "issues": "https://github.com/bostondv/acf-ninja-forms/issues/"
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "composer/installers": "~1.0"
+  }
+}
