@@ -57,10 +57,7 @@ If you are using the field to select multiple forms, you will have to iterate ov
 
 ## About
 
-Written by Boston Dell-Vandenberg of [Pomelo Design](http://www.stormconsultancy.co.uk).
-
-Pomelo Design is a web and mobile app development agency based in Toronto, Canada.
-
+Written by Boston Dell-Vandenberg of [Pomelo Design](http://www.pomelodesign.com). Pomelo Design is a web and mobile app development agency based in Toronto, Canada.
 
 ## Credits
 
