@@ -20,7 +20,6 @@ class acf_field_ninja_forms extends acf_field {
     $this->label = __( 'Ninja Forms' );
     $this->category = __( 'Relational', 'acf' ); // Basic, Content, Choice, etc
     $this->defaults = array(
-      'multiple' => 0,
       'allow_null' => 0
     );
 
@@ -54,20 +53,9 @@ class acf_field_ninja_forms extends acf_field {
     */
     
     acf_render_field_setting( $field, array(
-      'label' => 'Allow Null?',
+      'label' => __( 'Allow Null?', 'acf' ),
       'type'  =>  'radio',
       'name'  =>  'allow_null',
-      'choices' =>  array(
-        1 =>  __( 'Yes', 'acf' ),
-        0 =>  __( 'No', 'acf' ),
-      ),
-      'layout'  =>  'horizontal'
-    ));
-
-    acf_render_field_setting( $field, array(
-      'label' => 'Allow Multiple?',
-      'type'  =>  'radio',
-      'name'  =>  'allow_multiple',
       'choices' =>  array(
         1 =>  __( 'Yes', 'acf' ),
         0 =>  __( 'No', 'acf' ),
@@ -119,7 +107,13 @@ class acf_field_ninja_forms extends acf_field {
     ?>
 
       <select name="<?php echo $field['name'];?>" id="<?php echo $field['name'];?>">
-        <?php 
+        <?php
+          if ( $field['allow_null'] == true ) :
+            $selected = '';
+            if ( empty( $field['value'] ) ) $selected = ' selected="selected"'; ?>
+            <option<?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
+          <?php
+          endif;
           foreach ( $field['choices'] as $key => $value ) : 
             $selected = '';
             if ( $field['value'] == $key )
