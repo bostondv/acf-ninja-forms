@@ -17,10 +17,11 @@ class acf_field_ninja_forms extends acf_field {
   {
     // vars
     $this->name = 'ninja_forms_field';
-    $this->label = __( 'Ninja Forms' );
+    $this->label = __( 'Ninja Forms', 'acf-ninja-forms' );
     $this->category = __( 'Relational', 'acf' ); // Basic, Content, Choice, etc
     $this->defaults = array(
-      'allow_null' => 0
+      'allow_null' => 0,
+      'allow_multiple' => 0,
     );
 
     // do not delete!
@@ -63,6 +64,17 @@ class acf_field_ninja_forms extends acf_field {
       'layout'  =>  'horizontal'
     ));
 
+    acf_render_field_setting( $field, array(
+      'label' => __( 'Select multiple values?', 'acf' ),
+      'type'  =>  'radio',
+      'name'  =>  'allow_multiple',
+      'choices' =>  array(
+        1 =>  __( 'Yes', 'acf' ),
+        0 =>  __( 'No', 'acf' ),
+      ),
+      'layout'  =>  'horizontal'
+    ));
+
   }
   
   /*
@@ -92,7 +104,8 @@ class acf_field_ninja_forms extends acf_field {
     $field = array_merge($this->defaults, $field);
     $choices = array();
     $forms = ninja_forms_get_all_forms();
-
+    $multiple = ( $field['allow_multiple'] == true ? ' multiple' : '');
+    $field_name = ( $field['allow_multiple'] == true ? $field['name'] . '[]' : $field['name'] );
 
     if ( $forms ) {
       foreach( $forms as $form ) {
@@ -103,21 +116,36 @@ class acf_field_ninja_forms extends acf_field {
     // Override field settings and render
     $field['choices'] = $choices;
     $field['type'] = 'select';
-
     ?>
 
-      <select name="<?php echo $field['name'];?>" id="<?php echo $field['name'];?>">
+      <select name="<?php echo $field_name; ?>" id="<?php echo $field['name'];?>"<?php echo $multiple; ?>>
         <?php
           if ( $field['allow_null'] == true ) :
             $selected = '';
-            if ( empty( $field['value'] ) ) $selected = ' selected="selected"'; ?>
-            <option<?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
+            if ( is_array( $field['value'] ) ) {
+              if ( in_array( '', $field['value'] ) ) {
+                $selected = ' selected="selected"';
+              }
+            } else {
+              if ( $field['value'] == '' ) {
+                $selected = ' selected="selected"';
+              }
+            }
+            ?>
+            <option value="" <?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
           <?php
           endif;
           foreach ( $field['choices'] as $key => $value ) : 
             $selected = '';
-            if ( $field['value'] == $key )
-              $selected = ' selected="selected"';
+            if ( is_array( $field['value'] ) ) {
+              if ( in_array( $key, $field['value'] ) ) {
+                $selected = ' selected="selected"';
+              }
+            } else {
+              if ( $field['value'] == $key ) {
+                $selected = ' selected="selected"';
+              }
+            }
             ?>
             <option value="<?php echo $key; ?>"<?php echo $selected; ?>>
               <?php echo $value; ?>
@@ -159,7 +187,7 @@ class acf_field_ninja_forms extends acf_field {
         $value[ $k ] = $form;
       }
     } else {
-      $value = ninja_forms_get_form_by_id( $value );;
+      $value = ninja_forms_get_form_by_id( $value );
     }
 
     return $value;

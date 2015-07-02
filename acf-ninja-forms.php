@@ -10,6 +10,8 @@ License: MIT
 License URI: http://opensource.org/licenses/MIT
 */
 
+load_plugin_textdomain( 'acf-ninja-forms', false, dirname( plugin_basename(__FILE__) ) . '/lang/' ); 
+
 function include_field_types_ninja_forms( $version ) {
   include_once( 'ninja-forms-field.php' );
 }
