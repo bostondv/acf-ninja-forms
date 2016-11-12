@@ -1,7 +1,7 @@
 <?php
 
 class acf_field_ninja_forms extends acf_field {
-  
+
   /*
   *  __construct
   *
@@ -12,7 +12,7 @@ class acf_field_ninja_forms extends acf_field {
   *  @param n/a
   *  @return  n/a
   */
-  
+
   function __construct()
   {
     // vars
@@ -27,7 +27,7 @@ class acf_field_ninja_forms extends acf_field {
     // do not delete!
     parent::__construct();
   }
-  
+
   /*
   *  render_field_settings()
   *
@@ -40,9 +40,9 @@ class acf_field_ninja_forms extends acf_field {
   *  @param $field (array) the $field being edited
   *  @return  n/a
   */
-  
+
   function render_field_settings( $field ) {
-    
+
     /*
     *  acf_render_field_setting
     *
@@ -52,7 +52,7 @@ class acf_field_ninja_forms extends acf_field {
     *  More than one setting can be added by copy/paste the above code.
     *  Please note that you must also have a matching $defaults value for the field name (font_size)
     */
-    
+
     acf_render_field_setting( $field, array(
       'label' => __( 'Allow Null?', 'acf' ),
       'type'  =>  'radio',
@@ -76,7 +76,7 @@ class acf_field_ninja_forms extends acf_field {
     ));
 
   }
-  
+
   /*
   *  render_field()
   *
@@ -91,25 +91,27 @@ class acf_field_ninja_forms extends acf_field {
   *  @param $field (array) the $field being edited
   *  @return  n/a
   */
-  
+
   function render_field( $field ) {
-    
-    
+
+
     /*
     *  Review the data of $field.
     *  This will show what data is available
     */
-    
+
     // vars
     $field = array_merge($this->defaults, $field);
     $choices = array();
     $forms = ninja_forms_get_all_forms();
     $multiple = ( $field['allow_multiple'] == true ? ' multiple' : '');
     $field_name = ( $field['allow_multiple'] == true ? $field['name'] . '[]' : $field['name'] );
-
+    echo "<pre>";
+    // die(var_dump( $forms ));
+    echo "</pre>";
     if ( $forms ) {
       foreach( $forms as $form ) {
-        $choices[ $form[ 'id' ] ] = ucfirst( $form[ 'data' ][ 'form_title' ] );
+        $choices[ $form[ 'id' ] ] = (isset($form['data']['form_title'])) ? ucfirst($form['data']['form_title']) : ucfirst( $form[ 'data' ][ 'title' ] );
       }
     }
 
@@ -135,7 +137,7 @@ class acf_field_ninja_forms extends acf_field {
             <option value="" <?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
           <?php
           endif;
-          foreach ( $field['choices'] as $key => $value ) : 
+          foreach ( $field['choices'] as $key => $value ) :
             $selected = '';
             if ( is_array( $field['value'] ) ) {
               if ( in_array( $key, $field['value'] ) ) {
@@ -155,7 +157,7 @@ class acf_field_ninja_forms extends acf_field {
       </select>
     <?php
   }
-  
+
   /*
   *  format_value()
   *
@@ -171,8 +173,11 @@ class acf_field_ninja_forms extends acf_field {
   *
   *  @return  $value (mixed) the modified value
   */
-  
+
   function format_value( $value, $post_id, $field ) {
+    if (intval(Ninja_Forms::VERSION)>=3) {
+      return $value;
+    }
     if ( ! $value ) {
       return false;
     }
