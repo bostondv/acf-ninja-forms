@@ -5,6 +5,7 @@ This is an Advanced Custom Field custom field to select one or many [Ninja Forms
 ## Compatibility
 
 * ACF version 5 and up
+* Ninja Forms version 2.9.X and up
 
 ## Installation
 
@@ -20,9 +21,9 @@ This add-on can be treated as both a WP plugin or a theme include.
 
 ```
 function my_register_fields() {
-    include_once('acf-ninja-forms.php');
+    include_once( 'acf-ninja-forms.php' );
 }
-add_action('acf/register_fields', 'my_register_fields');
+add_action( 'acf/register_fields', 'my_register_fields' );
 ```
 
 ## Using the field
@@ -33,16 +34,29 @@ The data returned is either a Form object or an array of Form objects.
 
 If you have selected a single form and you want to display the form on the page, you can use:
 
+### Ninja Forms 3.X.X:
+
 ```
-<?php 
-    $form = get_field('your_form_field');
+<?php
+$form = get_field( 'your_form_field' );
+if ( class_exists( 'Ninja_Forms' ) ) {
+    Ninja_Forms()->display( $form[ 'id' ] );
+}
+?>
+```
+
+### Ninja Forms 2.9.X:
+
+```
+<?php
+    $form = get_field( 'your_form_field' );
     if ( function_exists( 'ninja_forms_display_form' ) ) {
         ninja_forms_display_form( $form[ 'id' ] );
     }
 ?>
 ```
 
-You can find out more about the Ninja Forms methods to embed a form on a page in their [documentation](http://docs.ninjaforms.com/)
+You can find out more about the Ninja Forms methods to embed a form on a page in their [documentation](http://developer.ninjaforms.com/)
 
 If you are using the field to select multiple forms, you will have to iterate over the array.  You can then use the form object as you like:
 
