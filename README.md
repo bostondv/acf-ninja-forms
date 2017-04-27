@@ -34,8 +34,7 @@ The data returned is either a Form object or an array of Form objects.
 
 If you have selected a single form and you want to display the form on the page, you can use:
 
-### Ninja Forms 3.X.X:
-
+*Ninja Forms 3.X.X*
 ```
 <?php
 $form = get_field( 'your_form_field' );
@@ -45,8 +44,7 @@ if ( class_exists( 'Ninja_Forms' ) ) {
 ?>
 ```
 
-### Ninja Forms 2.9.X:
-
+*Ninja Forms 2.9.X*
 ```
 <?php
     $form = get_field( 'your_form_field' );

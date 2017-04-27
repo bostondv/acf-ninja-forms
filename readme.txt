@@ -23,8 +23,28 @@ The data returned is either a Form object or an array of Form objects.
 If you have selected a single form and you want to display the form on the page, you can use:
 
 `
-<?php 
+<?php
     $form = get_field('your_form_field');
+    if ( function_exists( 'ninja_forms_display_form' ) ) {
+        ninja_forms_display_form( $form[ 'id' ] );
+    }
+?>
+`
+
+Ninja Forms 3.X.X
+`
+<?php
+$form = get_field( 'your_form_field' );
+if ( class_exists( 'Ninja_Forms' ) ) {
+    Ninja_Forms()->display( $form[ 'id' ] );
+}
+?>
+`
+
+Ninja Forms 2.9.X
+`
+<?php
+    $form = get_field( 'your_form_field' );
     if ( function_exists( 'ninja_forms_display_form' ) ) {
         ninja_forms_display_form( $form[ 'id' ] );
     }
