@@ -109,7 +109,7 @@ class acf_field_ninja_forms extends acf_field {
 
     if ( $forms ) {
       foreach( $forms as $form ) {
-        $choices[ $form[ 'id' ] ] = ucfirst( $form[ 'data' ][ 'form_title' ] );
+        $choices[ $form[ 'id' ] ] = ucfirst( $form[ 'data' ][ 'title' ] );
       }
     }
 
