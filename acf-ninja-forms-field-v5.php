@@ -29,6 +29,21 @@ class acf_field_ninja_forms extends acf_field {
   }
 
   /*
+   *  get_ninja_forms_version()
+   *  Check Ninja Forms version
+   *
+   *  @type  function
+   *  @since 1.0.3
+   *  @param n/a
+   *  @return  $version (int) the activate version of Ninja Forms
+   */
+
+   function get_ninja_forms_version()
+   {
+       return version_compare( get_option( 'ninja_forms_version', '0.0.0' ), '3', '<' ) || get_option( 'ninja_forms_load_deprecated', FALSE ) ? 2 : 3;
+   }
+
+  /*
   *  render_field_settings()
   *
   *  Create extra settings for your field. These are visible when editing a field
@@ -101,7 +116,7 @@ class acf_field_ninja_forms extends acf_field {
     */
 
     // vars
-    $nf_version = version_compare( get_option( 'ninja_forms_version', '0.0.0' ), '3', '<' ) || get_option( 'ninja_forms_load_deprecated', FALSE ) ? 2 : 3;
+    $nf_version = $this->get_ninja_forms_version();
     $field = array_merge($this->defaults, $field);
     $choices = array();
     $forms = $nf_version === 2 ? ninja_forms_get_all_forms() : Ninja_Forms()->form()->get_forms();
@@ -178,7 +193,7 @@ class acf_field_ninja_forms extends acf_field {
   */
 
   function format_value( $value, $post_id, $field ) {
-    $nf_version = version_compare( get_option( 'ninja_forms_version', '0.0.0' ), '3', '<' ) || get_option( 'ninja_forms_load_deprecated', FALSE ) ? 2 : 3;
+    $nf_version = $this->get_ninja_forms_version();
 
     if ( ! $value ) {
       return false;
@@ -200,7 +215,7 @@ class acf_field_ninja_forms extends acf_field {
         $value[ $k ] = $form;
       }
     } else {
-      if ($nf_Version === 2) {
+      if ($nf_version === 2) {
         $value = ninja_forms_get_form_by_id( $value );
       } else {
         $form_object = Ninja_Forms()->form( $value )->get();
