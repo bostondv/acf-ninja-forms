@@ -1,12 +1,12 @@
 <?php
 
 class acf_field_ninja_forms extends acf_field {
-  
+
   // vars
   var $settings; // will hold info such as dir / path
   var$defaults; // will hold default field options
-    
-    
+
+
   /*
   *  __construct
   *
@@ -15,7 +15,7 @@ class acf_field_ninja_forms extends acf_field {
   *  @since 3.6
   *  @date  23/01/13
   */
-  
+
   function __construct()
   {
     // vars
@@ -26,12 +26,12 @@ class acf_field_ninja_forms extends acf_field {
       'allow_null' => 0,
       'allow_multiple' => 0,
     );
-    
-    
+
+
     // do not delete!
     parent::__construct();
-      
-      
+
+
     // settings
     $this->settings = array(
       'path' => apply_filters('acf/helpers/get_path', __FILE__),
@@ -39,8 +39,23 @@ class acf_field_ninja_forms extends acf_field {
       'version' => '1.0.0'
     );
   }
-  
-  
+
+  /*
+   *  get_ninja_forms_version()
+   *  Check Ninja Forms version
+   *
+   *  @type  function
+   *  @since 1.0.3
+   *  @param n/a
+   *  @return  $version (int) the activate version of Ninja Forms
+   */
+
+   function get_ninja_forms_version()
+   {
+       return version_compare( get_option( 'ninja_forms_version', '0.0.0' ), '3', '<' ) || get_option( 'ninja_forms_load_deprecated', FALSE ) ? 2 : 3;
+   }
+
+
   /*
   *  create_options()
   *
@@ -53,18 +68,18 @@ class acf_field_ninja_forms extends acf_field {
   *
   *  @param $field  - an array holding all the field's data
   */
-  
+
   function create_options( $field )
   {
     // defaults?
     /*
     $field = array_merge($this->defaults, $field);
     */
-    
+
     // key is needed in the field names to correctly save the data
     $key = $field['name'];
-    
-    
+
+
     // Create Field Options HTML
     ?>
 <tr class="field_option field_option_<?php echo $this->name; ?>">
@@ -73,7 +88,7 @@ class acf_field_ninja_forms extends acf_field {
   </td>
   <td>
     <?php
-    
+
     do_action('acf/create_field', array(
       'type'    =>  'radio',
       'name'    =>  'fields['.$key.'][allow_null]',
@@ -84,7 +99,7 @@ class acf_field_ninja_forms extends acf_field {
         0 =>  __( 'No', 'acf' ),
       )
     ));
-    
+
     ?>
   </td>
 </tr>
@@ -94,7 +109,7 @@ class acf_field_ninja_forms extends acf_field {
   </td>
   <td>
     <?php
-    
+
     do_action('acf/create_field', array(
       'type'    =>  'radio',
       'name'    =>  'fields['.$key.'][allow_multiple]',
@@ -105,15 +120,15 @@ class acf_field_ninja_forms extends acf_field {
         0 =>  __( 'No', 'acf' ),
       )
     ));
-    
+
     ?>
   </td>
 </tr>
     <?php
-    
+
   }
-  
-  
+
+
   /*
   *  create_field()
   *
@@ -125,24 +140,29 @@ class acf_field_ninja_forms extends acf_field {
   *  @since 3.6
   *  @date  23/01/13
   */
-  
+
   function create_field( $field )
   {
     /*
     *  Review the data of $field.
     *  This will show what data is available
     */
-    
+
     // vars
+    $nf_version = $this->get_ninja_forms_version();
     $field = array_merge($this->defaults, $field);
     $choices = array();
-    $forms = ninja_forms_get_all_forms();
+    $forms = $nf_version === 2 ? ninja_forms_get_all_forms() : Ninja_Forms()->form()->get_forms();
     $multiple = ( $field['allow_multiple'] == true ? ' multiple' : '');
     $field_name = ( $field['allow_multiple'] == true ? $field['name'] . '[]' : $field['name'] );
 
     if ( $forms ) {
       foreach( $forms as $form ) {
-        $choices[ $form[ 'id' ] ] = ucfirst( $form[ 'data' ][ 'form_title' ] );
+        if ($nf_version === 2) {
+          $choices[ $form[ 'id' ] ] = ucfirst( $form[ 'data' ][ 'form_title' ] );
+        } else {
+          $choices[ $form->get_id() ] = ucfirst( $form->get_setting( 'title' ) );
+        }
       }
     }
 
@@ -168,7 +188,7 @@ class acf_field_ninja_forms extends acf_field {
             <option value="" <?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
           <?php
           endif;
-          foreach ( $field['choices'] as $key => $value ) : 
+          foreach ( $field['choices'] as $key => $value ) :
             $selected = '';
             if ( is_array( $field['value'] ) ) {
               if ( in_array( $key, $field['value'] ) ) {
@@ -188,7 +208,7 @@ class acf_field_ninja_forms extends acf_field {
       </select>
     <?php
   }
-  
+
   /*
   *  format_value()
   *
@@ -204,8 +224,10 @@ class acf_field_ninja_forms extends acf_field {
   *
   *  @return  $value  - the modified value
   */
-  
+
   function format_value( $value, $post_id, $field ) {
+    $nf_version = $this->get_ninja_forms_version();
+
     if ( ! $value ) {
       return false;
     }
@@ -216,11 +238,22 @@ class acf_field_ninja_forms extends acf_field {
 
     if ( is_array( $value ) ) {
       foreach( $value as $k => $v ) {
-        $form = ninja_forms_get_form_by_id( $v );
+        if ($nf_version === 2) {
+          $form = ninja_forms_get_form_by_id( $v );
+        } else {
+          $form_object = Ninja_Forms()->form( $v )->get();
+          $form = array( 'id' => $v, 'data' => $form_object->get_settings(), 'date_updated' => $form_object->get_setting( 'date_updated' ) );
+        }
+
         $value[ $k ] = $form;
       }
     } else {
-      $value = ninja_forms_get_form_by_id( $value );
+      if ($nf_version === 2) {
+        $value = ninja_forms_get_form_by_id( $value );
+      } else {
+        $form_object = Ninja_Forms()->form( $value )->get();
+        $value = array( 'id' => $value, 'data' => $form_object->get_settings(), 'date_updated' => $form_object->get_setting( 'date_updated' ) );
+      }
     }
 
     return $value;
