@@ -4,7 +4,7 @@ This is an Advanced Custom Field custom field to select one or many [Ninja Forms
 
 ## Compatibility
 
-* ACF version 5 and up
+* ACF version 4 and up
 * Ninja Forms version 2.9.X and up
 
 ## Installation
@@ -69,7 +69,7 @@ If you are using the field to select multiple forms, you will have to iterate ov
 
 ## About
 
-Written by Boston Dell-Vandenberg of [Pomelo Design](http://www.pomelodesign.com). Pomelo Design is a web and mobile app development agency based in Toronto, Canada.
+Made with <3 by [Boston Dell-Vandenberg](http://bostondv.com/).
 
 ## Credits
 

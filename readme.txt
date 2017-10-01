@@ -1,12 +1,12 @@
 === ACF Ninja Forms ===
 Contributors: bostondv
-Donate link: http://pomelodesign.com/donate
+Donate link: http://bostondv.com/tips
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 Tags: ninja forms, acf, advanced custom fields, forms
 Requires at least: 3.8
-Tested up to: 4.2
-Stable tag: 1.0.2
+Tested up to: 4.8
+Stable tag: 1.0.3
 
 Adds an Advanced Custom Fields field to select one or many Ninja Forms.
 
@@ -66,7 +66,7 @@ If you are using the field to select multiple forms, you will have to iterate ov
 
 = About =
 
-Written by Boston Dell-Vandenberg of [Pomelo Design](http://www.pomelodesign.com). Pomelo Design is a web and mobile app development agency based in Toronto, Canada.
+Made with <3 by [Boston Dell-Vandenberg](http://bostondv.com/).
 
 = Credits =
 
@@ -78,6 +78,10 @@ Thanks to Adam Pope for the [ACF Gravity Forms](https://github.com/stormuk/Gravi
 1. Activate the Advanced Custom Fields: Ninja Forms Field plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+
+= 1.0.3 =
+
+* Adds support for Ninja Forms v3 (thanks @JacobDB)
 
 = 1.0.2 =
 
