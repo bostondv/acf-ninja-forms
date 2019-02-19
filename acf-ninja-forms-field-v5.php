@@ -68,27 +68,32 @@ class acf_field_ninja_forms extends acf_field {
     *  Please note that you must also have a matching $defaults value for the field name (font_size)
     */
 
+    // allow_null
     acf_render_field_setting( $field, array(
-      'label' => __( 'Allow Null?', 'acf' ),
-      'type'  =>  'radio',
-      'name'  =>  'allow_null',
-      'choices' =>  array(
-        1 =>  __( 'Yes', 'acf' ),
-        0 =>  __( 'No', 'acf' ),
-      ),
-      'layout'  =>  'horizontal'
+      'label'        => __( 'Allow Null?', 'acf' ),
+      'instructions' => '',
+      'name'         => 'allow_null',
+      'type'         => 'true_false',
+      'ui'           => 1,
     ));
 
+    // multiple
     acf_render_field_setting( $field, array(
-      'label' => __( 'Select multiple values?', 'acf' ),
-      'type'  =>  'radio',
-      'name'  =>  'allow_multiple',
-      'choices' =>  array(
-        1 =>  __( 'Yes', 'acf' ),
-        0 =>  __( 'No', 'acf' ),
-      ),
-      'layout'  =>  'horizontal'
+      'label'        => __( 'Select multiple values?', 'acf' ),
+      'instructions' => '',
+      'name'         => 'allow_multiple',
+      'type'         => 'true_false',
+      'ui'           => 1,
     ));
+
+    // // ui
+    // acf_render_field_setting( $field, array(
+    //   'label'        => __('Stylised UI','acf'),
+    //   'instructions' => '',
+    //   'name'         => 'ui',
+    //   'type'         => 'true_false',
+    //   'ui'           => 1,
+    // ));
 
   }
 
@@ -118,10 +123,12 @@ class acf_field_ninja_forms extends acf_field {
     // vars
     $nf_version = $this->get_ninja_forms_version();
     $field = array_merge($this->defaults, $field);
-    $choices = array();
     $forms = $nf_version === 2 ? ninja_forms_get_all_forms() : Ninja_Forms()->form()->get_forms();
-    $multiple = ( $field['allow_multiple'] == true ? ' multiple' : '');
     $field_name = ( $field['allow_multiple'] == true ? $field['name'] . '[]' : $field['name'] );
+
+		// convert
+		$value = acf_get_array($field['value']);
+		$choices = acf_get_array($field['choices']);
 
     if ( $forms ) {
       foreach( $forms as $form ) {
@@ -133,47 +140,64 @@ class acf_field_ninja_forms extends acf_field {
       }
     }
 
-    // Override field settings and render
-    $field['choices'] = $choices;
-    $field['type'] = 'select';
-    ?>
+    // placeholder
+		if( empty($field['placeholder']) ) {
+			$field['placeholder'] = _x('Select', 'verb', 'acf');
+    }
 
-      <select name="<?php echo $field_name; ?>" id="<?php echo $field['name'];?>"<?php echo $multiple; ?>>
-        <?php
-          if ( $field['allow_null'] == true ) :
-            $selected = '';
-            if ( is_array( $field['value'] ) ) {
-              if ( in_array( '', $field['value'] ) ) {
-                $selected = ' selected="selected"';
-              }
-            } else {
-              if ( $field['value'] == '' ) {
-                $selected = ' selected="selected"';
-              }
-            }
-            ?>
-            <option value="" <?php echo $selected; ?>><?php _e( '- Select -', 'acf' ); ?></option>
-          <?php
-          endif;
-          foreach ( $field['choices'] as $key => $value ) :
-            $selected = '';
-            if ( is_array( $field['value'] ) ) {
-              if ( in_array( $key, $field['value'] ) ) {
-                $selected = ' selected="selected"';
-              }
-            } else {
-              if ( $field['value'] == $key ) {
-                $selected = ' selected="selected"';
-              }
-            }
-            ?>
-            <option value="<?php echo $key; ?>"<?php echo $selected; ?>>
-              <?php echo $value; ?>
-            </option>
-          <?php endforeach;
-        ?>
-      </select>
-    <?php
+    // add empty value (allows '' to be selected)
+		if( empty($value) ) {
+			$value = array('');
+		}
+
+    // Override field type
+    $field['type'] = 'select';
+
+    if( $field['allow_null'] && !$field['multiple'] ) {
+			$choices = array( '' => "- {$field['placeholder']} -" ) + $choices;
+    }
+
+    // vars
+    $select = array(
+      'id'                => $field['id'],
+      'class'             => $field['class'],
+      'name'              => $field['name'],
+      'data-ui'           => $field['ui'],
+      'data-ajax'         => $field['ajax'],
+      'data-multiple'     => $field['multiple'] == true ? 1 : 0,
+      'data-placeholder'  => $field['placeholder'],
+      'data-allow_null'   => $field['allow_null']
+    );
+
+    // multiple
+    if( $field['multiple'] ) {
+
+      $select['multiple'] = 'multiple';
+      $select['size'] = 5;
+      $select['name'] .= '[]';
+    }
+
+
+    // special atts
+    if( !empty($field['readonly']) ) $select['readonly'] = 'readonly';
+    if( !empty($field['disabled']) ) $select['disabled'] = 'disabled';
+
+
+    // hidden input is needed to allow validation to see <select> element with no selected value
+    if( $field['multiple'] || $field['ui'] ) {
+      acf_hidden_input(array(
+        'id'    => $field['id'] . '-input',
+        'name'  => $field['name']
+      ));
+    }
+
+
+    // append
+    $select['value'] = $value;
+    $select['choices'] = $choices;
+
+    // render
+    acf_select_input( $select );
   }
 
   /*
