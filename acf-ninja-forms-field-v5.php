@@ -21,7 +21,7 @@ class acf_field_ninja_forms extends acf_field {
     $this->category = __( 'Relational', 'acf' ); // Basic, Content, Choice, etc
     $this->defaults = array(
       'allow_null' => 0,
-      'allow_multiple' => 0,
+      'multiple' => 0,
     );
 
     // do not delete!
@@ -81,55 +81,45 @@ class acf_field_ninja_forms extends acf_field {
     acf_render_field_setting( $field, array(
       'label'        => __( 'Select multiple values?', 'acf' ),
       'instructions' => '',
-      'name'         => 'allow_multiple',
+      'name'         => 'multiple',
       'type'         => 'true_false',
       'ui'           => 1,
     ));
 
-    // // ui
-    // acf_render_field_setting( $field, array(
-    //   'label'        => __('Stylised UI','acf'),
-    //   'instructions' => '',
-    //   'name'         => 'ui',
-    //   'type'         => 'true_false',
-    //   'ui'           => 1,
-    // ));
-
+    // ui
+    acf_render_field_setting( $field, array(
+      'label'        => __('Stylised UI','acf'),
+      'instructions' => '',
+      'name'         => 'ui',
+      'type'         => 'true_false',
+      'ui'           => 1,
+    ));
   }
 
   /*
-  *  render_field()
+  *  acf_prepare_field
   *
-  *  Create the HTML interface for your field
+  *  This function will prepare the field for input
   *
-  *  @param $field (array) the $field being rendered
+  *  @type	function
+  *  @date	12/02/2014
+  *  @since	5.0.0
   *
-  *  @type  action
-  *  @since 3.6
-  *  @date  23/01/13
-  *
-  *  @param $field (array) the $field being edited
-  *  @return  n/a
+  *  @param	$field (array)
+  *  @return	$field (array)
   */
+  function prepare_field( $field ) {
+    /*
+    *  Get the Ninja Forms version and the forms
+    */
+    $nf_version = $this->get_ninja_forms_version();
+    $forms = $nf_version === 2 ? ninja_forms_get_all_forms() : Ninja_Forms()->form()->get_forms();
 
-  function render_field( $field ) {
-
+    $choices = array();
 
     /*
-    *  Review the data of $field.
-    *  This will show what data is available
+    *  Store each form as a possible select choice
     */
-
-    // vars
-    $nf_version = $this->get_ninja_forms_version();
-    $field = array_merge($this->defaults, $field);
-    $forms = $nf_version === 2 ? ninja_forms_get_all_forms() : Ninja_Forms()->form()->get_forms();
-    $field_name = ( $field['allow_multiple'] == true ? $field['name'] . '[]' : $field['name'] );
-
-		// convert
-		$value = acf_get_array($field['value']);
-		$choices = acf_get_array($field['choices']);
-
     if ( $forms ) {
       foreach( $forms as $form ) {
         if ($nf_version === 2) {
@@ -140,64 +130,31 @@ class acf_field_ninja_forms extends acf_field {
       }
     }
 
-    // placeholder
-		if( empty($field['placeholder']) ) {
-			$field['placeholder'] = _x('Select', 'verb', 'acf');
+    /*
+    *  Add a default placeholder value
+    */
+    if( empty($field['placeholder']) ) {
+      $field['placeholder'] = _x('Select', 'verb', 'acf');
     }
 
-    // add empty value (allows '' to be selected)
-		if( empty($value) ) {
-			$value = array('');
-		}
-
-    // Override field type
-    $field['type'] = 'select';
-
+    /*
+    *  Add the placeholder choice if allow_null is true and multiple is false
+    */
     if( $field['allow_null'] && !$field['multiple'] ) {
 			$choices = array( '' => "- {$field['placeholder']} -" ) + $choices;
     }
 
-    // vars
-    $select = array(
-      'id'                => $field['id'],
-      'class'             => $field['class'],
-      'name'              => $field['name'],
-      'data-ui'           => $field['ui'],
-      'data-ajax'         => $field['ajax'],
-      'data-multiple'     => $field['multiple'] == true ? 1 : 0,
-      'data-placeholder'  => $field['placeholder'],
-      'data-allow_null'   => $field['allow_null']
-    );
+    /*
+    *  Add choices, set type to select, and add missing 'ajax' key
+    */
+    $field['choices'] = $choices;
+    $field['type'] = 'select';
+    $field['ajax'] = false;
 
-    // multiple
-    if( $field['multiple'] ) {
-
-      $select['multiple'] = 'multiple';
-      $select['size'] = 5;
-      $select['name'] .= '[]';
-    }
-
-
-    // special atts
-    if( !empty($field['readonly']) ) $select['readonly'] = 'readonly';
-    if( !empty($field['disabled']) ) $select['disabled'] = 'disabled';
-
-
-    // hidden input is needed to allow validation to see <select> element with no selected value
-    if( $field['multiple'] || $field['ui'] ) {
-      acf_hidden_input(array(
-        'id'    => $field['id'] . '-input',
-        'name'  => $field['name']
-      ));
-    }
-
-
-    // append
-    $select['value'] = $value;
-    $select['choices'] = $choices;
-
-    // render
-    acf_select_input( $select );
+    /*
+    *  Let ACF handle the rest
+    */
+    return $field;
   }
 
   /*

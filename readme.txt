@@ -6,7 +6,7 @@ License URI: http://opensource.org/licenses/MIT
 Tags: ninja forms, acf, advanced custom fields, forms
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 
 Adds an Advanced Custom Fields field to select one or many Ninja Forms.
 
@@ -78,6 +78,11 @@ Thanks to Adam Pope for the [ACF Gravity Forms](https://github.com/stormuk/Gravi
 1. Activate the Advanced Custom Fields: Ninja Forms Field plugin through the 'Plugins' menu in WordPress
 
 == Changelog ==
+
+= 1.1.0 =
+
+* Enabled stylized toggle UI to match native fields
+* Outputs field as `select` field rather than a truly custom field
 
 = 1.0.4 =
 
